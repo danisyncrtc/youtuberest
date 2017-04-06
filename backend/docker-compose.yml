@@ -1,0 +1,31 @@
+version: '2'
+services:
+  backend:
+    build: .
+    image: danisyncrtc/yotuberest
+    ports:
+     - "3000:3000"
+    depends_on:
+      - mongo
+    volumes:
+     - .:/app
+    command: [nodemon, ./bin/www]
+  mongo:
+    image: mongo
+    command: >
+      bash -lc '
+        {(sleep 3; npm run mongo:populate) &};
+        mongod'
+    volumes:
+       - /Users/danielpueblamartin/docker/db:/data/db
+    ports:
+      - "27017:27017"
+  nginx:
+    image: danisyncrtc/yotuberest_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - /Users/danielpueblamartin/nginx:/etc/nginx/
+      - /Users/danielpueblamartin/cache:/var/cache/nginx
+    depends_on:
+      - backend

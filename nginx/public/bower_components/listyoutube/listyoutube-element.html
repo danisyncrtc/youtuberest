@@ -1,0 +1,100 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../google-youtube/google-youtube.html">
+
+<!--
+`listyoutube-element`
+
+
+@demo demo/index.html
+-->
+
+<dom-module id="listyoutube-element">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      iron-icon {
+      fill: var(--icon-toggle-color, red);
+      stroke: var(--icon-toggle-outline-color, red);
+      cursor: pointer;
+    }
+    </style>
+
+    <iron-ajax
+    id="ajaxGet"
+    auto
+    url="http://localhost:3000/videos"
+    method="{{methodAjax}}"
+    last-response="{{ajaxResponse}}"
+    on-error="errorResponse"
+    content-type="application/json">
+  </iron-ajax>
+
+  <iron-ajax
+  id="ajaxDel"
+  auto
+  method="{{methodAjax}}"
+  on-response="favResponse"
+  on-error="errorResponse"
+  content-type="application/json">
+</iron-ajax>
+
+
+    <template is="dom-repeat" id="videosList" items="[[ajaxResponse]]">
+      <div class="horizontal-section">
+        <h2><a href="https://www.youtube.com/watch?v=[[item.id_video]]" target="_blank">[[item.title]]</a></h2>
+        <google-youtube id="googleYouTube" video-id="[[item.id_video]]"></google-youtube>
+        <p>[[item.desc]]</p>
+        <iron-icon id="fav_[[item._id]]" icon="icons:star" on-tap="pressFav"></iron-icon>
+      </div>
+    </template>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'listyoutube-element',
+
+      properties: {
+        methodAjax: {
+          type: String,
+          value: 'GET',
+        },
+      },
+      ready: function() {
+        var component = this;
+        //component.$.ajaxGet.generateRequest();
+        console.log('pasa');
+      },
+
+      favResponse: function(e){
+        var component = this;
+        var response = e.detail.response;
+        console.info(JSON.stringify(response));
+        component.$.ajaxGet.generateRequest();
+      },
+
+      errorResponse: function(e){
+        console.info('Error connection');
+      },
+
+      pressFav: function(e) {
+        var id = e.target.id.split('_')[1];
+        console.info('FAV '+ id);
+
+        var component = this;
+        this.$.ajaxDel.url = "http://localhost:3000/videos/delete/" + id
+        component.$.ajaxDel.generateRequest();
+        //console.info(JSON.stringify(this.$.ajaxDel.params));
+      },
+
+      onTap: function(e) {
+        e.stopPropagation();
+      },
+
+    });
+  </script>
+</dom-module>

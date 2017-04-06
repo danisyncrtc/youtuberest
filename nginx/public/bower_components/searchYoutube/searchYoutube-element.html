@@ -1,0 +1,123 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../google-youtube/google-youtube.html">
+
+<!--
+`searchYoutube-element`
+
+
+@demo demo/index.html
+-->
+
+<dom-module id="searchYoutube-element">
+  <template>
+  <style>
+  :host {
+    display: block;
+  }
+  iron-icon {
+    cursor: pointer;
+  }
+
+  </style>
+
+  <iron-ajax
+     id="ajaxPost"
+     url="http://localhost:3000/videos/add"
+     method="{{methodAjax}}"
+     on-response="favResponse"
+     on-error="errorResponse"
+     content-type="application/json">
+  </iron-ajax>
+
+  <iron-ajax id="ajaxYoutube" auto url="https://www.googleapis.com/youtube/v3/search"
+  handle-as="json" method="GET" last-response="{{ajaxResponse}}" debounce-duration="300"></iron-ajax>
+
+  <template is="dom-repeat" id="videosList" items="[[ajaxResponse.items]]">
+    <div class="horizontal-section">
+      <h2><a href="https://www.youtube.com/watch?v=[[item.id.videoId]]" target="_blank">[[item.snippet.title]]</a></h2>
+      <google-youtube id="googleYouTube" video-id="[[item.id.videoId]]"></google-youtube>
+      <p>[[item.snippet.description]]</p>
+      <iron-icon id="fav_[[item.id.videoId]]" icon="icons:star" on-tap="pressFav"></iron-icon>
+    </div>
+  </template>
+</template>
+
+  <script>
+    Polymer({
+
+      is: 'searchYoutube-element',
+
+      properties: {
+        methodAjax: {
+          type: String,
+          value: 'POST',
+        },
+        serviceQuery: {
+          type: String,
+          value: 'polymer',
+          observer: '_queryChanged'
+        },
+        url: {
+          type: String,
+          value: '/videos/add'
+        },
+      },
+
+
+      listeners: {
+        'tap': 'onTap'
+      },
+
+      _queryChanged(newVal, oldVal) {
+        console.info('new value: ' + newVal);
+        this.$.ajaxYoutube.params = {part:"snippet", q:this.serviceQuery, key: "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", type: "video"};
+      },
+
+      ready: function() {
+        this.$.ajaxYoutube.params = {part:"snippet", q:this.serviceQuery, key: "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", type: "video"};
+        console.info('Start Component ');
+      },
+
+      pressFav: function(e) {
+        var item = this.$.videosList.itemForElement(e.target);
+        var id = item.id.videoId;
+        var title = item.snippet.title;
+        var desc = item.snippet.description;
+        //var id = item.id.split('_')[1];
+        console.info('FAV '+ id);
+
+
+        var component = this;
+        component.$.ajaxPost.body = JSON.stringify({
+          id_video: id,
+          title: title,
+          desc: desc,
+          date: new Date()
+        });
+        component.$.ajaxPost.generateRequest();
+        console.info(JSON.stringify(component.$.ajaxPost.body));
+      },
+
+      favResponse: function(e){
+        var component = this;
+        var response = e.detail.response;
+        if(response.status){
+          console.info('FAV saved');
+        } else {
+          console.info('Error saving:' + response.errorMessage);
+        }
+      },
+
+      errorResponse: function(e){
+        console.info('Error connection');
+      },
+
+      onTap: function(e) {
+        e.stopPropagation();
+      },
+
+    });
+  </script>
+</dom-module>

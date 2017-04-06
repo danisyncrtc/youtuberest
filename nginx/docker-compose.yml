@@ -1,0 +1,9 @@
+version: '2'
+services:
+  nginx:
+    build: .
+    image: danisyncrtc/yotuberest_nginx
+    volumes:
+     - .:/etc/nginx/
+    ports:
+     - "80:80"
