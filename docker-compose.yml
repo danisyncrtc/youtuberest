@@ -2,7 +2,7 @@ version: '2'
 services:
   backend:
     build: .
-    image: danisyncrtc/yotuberest
+    image: danisyncrtc/youtuberest
     ports:
      - "3000:3000"
     depends_on:
@@ -11,7 +11,7 @@ services:
      - ./backend:/app
     command: [nodemon, ./bin/www]
   mongo:
-    image: mongo
+    image: danisyncrtc/youtuberest_mongo
     command: >
       bash -lc '
         {(sleep 3; npm run mongo:populate) &};
@@ -21,7 +21,7 @@ services:
     ports:
       - "27017:27017"
   nginx:
-    image: danisyncrtc/yotuberest_nginx
+    image: danisyncrtc/youtuberest_nginx
     ports:
       - "80:80"
     volumes:
