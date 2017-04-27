@@ -6,7 +6,11 @@ services:
     ports:
      - "3000:3000"
     depends_on:
-      - mongo
+     - mongo
+    environment:
+      - DEBUG=syncrtc:*
+      - LOGGER_SERV=syncrtc.localhost
+      - NODE_ENV=development
     volumes:
      - .:/app
     command: [nodemon, ./bin/www]

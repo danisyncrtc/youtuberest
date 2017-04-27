@@ -17,5 +17,7 @@ COPY . /app
 EXPOSE 3000
 
 ENV MONGO_HOST='mongo'
+ENV LOGGER_SERV='backnd2'
+ENV GOOGLE_APPLICATION_CREDENTIALS=GCP_key.json
 
 CMD [ "npm", "start" ]

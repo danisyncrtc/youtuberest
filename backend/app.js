@@ -1,11 +1,14 @@
+
+
 var express = require('express');
 var cors = require('cors')
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+//var logger2 = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+const logger = require('./logger/logger');
 
 //var mongooseConnect = require('./config/mongoose')();
 
@@ -23,20 +26,20 @@ var videos = require('./routes/videos');
 
 var app = express();
 
-app.use(cors())
+app.use(cors());
 
 mongoose.connect('mongodb://' + (process.env.MONGO_HOST || 'localhost') + ':27017/youtuberest', function(){
-    console.log('connected to databasess!')
+    logger.info('connected to databasesf!');
 });
 
 // If the connection throws an error
 mongoose.connection.on('error',function (err) {
-  console.log('Mongoose default connection error: ' + err);
+  logger.error('Mongoose default connection error', { err: err });
 });
 
 // When the connection is disconnected
 mongoose.connection.on('disconnected', function () {
-  console.log('Mongoose default connection disconnected');
+  logger.warn('Mongoose default connection disconnected');
 });
 
 // view engine setup
@@ -44,8 +47,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+// app.use(favicon(__dirname + '/public/favicon.ico'));
+// app.use(logger2('combined'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

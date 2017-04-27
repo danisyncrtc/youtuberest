@@ -7,6 +7,8 @@ services:
      - "3000:3000"
     depends_on:
       - mongo
+    environment:
+      - LOGGER_SERV=backnd1
     volumes:
      - ./backend:/app
     command: [nodemon, ./bin/www]
