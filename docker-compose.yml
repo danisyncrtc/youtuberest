@@ -10,7 +10,8 @@ services:
     environment:
       - LOGGER_SERV=backnd1
     volumes:
-     - ./backend:/app
+      - ./backend:/app
+      - /app/node_modules
     command: [nodemon, ./bin/www]
   mongo:
     image: danisyncrtc/youtuberest_mongo

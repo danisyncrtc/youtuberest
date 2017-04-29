@@ -1,2 +1,4 @@
 *.*DS_Store
 db
+backend/node_modules/
+docker-compose.yml
